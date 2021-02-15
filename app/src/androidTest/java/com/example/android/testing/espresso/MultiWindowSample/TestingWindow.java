@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.action.ViewActions.typeTextIntoFocusedView;
@@ -62,5 +63,21 @@ public class TestingWindow {
         onView(withText("Southern Ocean"))
                 .inRoot(withDecorView(not(is(mActivity.getWindow().getDecorView()))))
                 .check(doesNotExist());
+    }
+
+    @Test
+    public void autoCompleteTextView_clickAndCheck() {
+        // Type text into the text view
+        onView(withId(R.id.auto_complete_text_view))
+                .perform(typeTextIntoFocusedView("South "), closeSoftKeyboard());
+
+        // Tap on a suggestion.
+        onView(withText("South China Sea"))
+                .inRoot(withDecorView(not(is(mActivity.getWindow().getDecorView()))))
+                .perform(click());
+
+        // By clicking on the auto complete term, the text should be filled in.
+        onView(withId(R.id.auto_complete_text_view))
+                .check(matches(withText("South China Sea")));
     }
 }
